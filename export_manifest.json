@@ -1,0 +1,91 @@
+{
+  "clean_history": true,
+  "dataset_payload_included": false,
+  "files": [
+    {
+      "relative_path": ".gitignore",
+      "sha256": "106270fce78219e995427dac05e60d85873f30b5f659e1ae174276912193653b",
+      "size_bytes": 41
+    },
+    {
+      "relative_path": "CITATION.cff",
+      "sha256": "8f64e187eabd5f410f3aa20993e9402eab28e43edfac886013418587da1ea8bc",
+      "size_bytes": 360
+    },
+    {
+      "relative_path": "DATA_CARD.md",
+      "sha256": "9201819bf25a734c45d7b32396c97566d65f9b09ee131324d181ad60cd518ef6",
+      "size_bytes": 918
+    },
+    {
+      "relative_path": "LICENSE",
+      "sha256": "47a70171e30749d941ee44bf279a6f72a198b838c51bfd87eb9f37310eafbfa1",
+      "size_bytes": 1064
+    },
+    {
+      "relative_path": "MODEL_CARD.md",
+      "sha256": "b4b1ee7e69e06ce554a3ab333f4c4fe73e7ae4ed5760d9b655ad145d760d543f",
+      "size_bytes": 1519
+    },
+    {
+      "relative_path": "NOTICE.md",
+      "sha256": "c91efbc1e57896117065c8f674173a9f1bc87e01c6926e93fe7bae594a1c47c1",
+      "size_bytes": 575
+    },
+    {
+      "relative_path": "README.md",
+      "sha256": "c9fa4a294c52ad7361a2c8b258359c8c92b7ba949f4de3c292ee15a7fd1c2e25",
+      "size_bytes": 2675
+    },
+    {
+      "relative_path": "SECURITY.md",
+      "sha256": "022f9b179fc92de97936817fcbbd4592e0afd17e16f31c9cd5ea67aec61aa4c6",
+      "size_bytes": 280
+    },
+    {
+      "relative_path": "demo_search.py",
+      "sha256": "eb99bd72252e98bacc4a5d469111802002a2d7dc0b13cb3c15fbe1df632170ff",
+      "size_bytes": 1204
+    },
+    {
+      "relative_path": "examples/corpus.jsonl",
+      "sha256": "2ca1665f9ab57e712bdde8dab306b225d4bbe54522272a6649fa44fddcd4703e",
+      "size_bytes": 347
+    },
+    {
+      "relative_path": "examples/query.json",
+      "sha256": "5771663cdbc23683d54a022ad4d3c281aa19aea316ffbe27485a39df9192a919",
+      "size_bytes": 105
+    },
+    {
+      "relative_path": "requirements.txt",
+      "sha256": "552aba7e9925f0e1bc98bcbf4e8ba248a660ce67109a226559de84bc1fe8bdb4",
+      "size_bytes": 29
+    },
+    {
+      "relative_path": "results/benchmark_summary.json",
+      "sha256": "8de929df52364598e9ef720fbcdfe7ab2523ab7f7deea286f360883626164c4a",
+      "size_bytes": 2991
+    },
+    {
+      "relative_path": "src/kbmem/__init__.py",
+      "sha256": "54ae6cf4dab2a1ceaa6967c85b52437fef62750f80468b9209801521e3808eda",
+      "size_bytes": 138
+    },
+    {
+      "relative_path": "src/kbmem/search.py",
+      "sha256": "c30816972c2e5386c938673d78f45aab48e2412b6cf5ec44daa95c2fc23f7989",
+      "size_bytes": 1066
+    },
+    {
+      "relative_path": "tests/test_search.py",
+      "sha256": "0e9703b91787943e56bc533c0cef98147b4776181b4a0bc0c5abf6e15c2e4566",
+      "size_bytes": 716
+    }
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/RUMPELL/K-BMEM",
+  "schema_version": 1,
+  "status": "PUBLIC_RELEASE_READY",
+  "weights_included": false
+}

@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "K-BMEM: Korean-English Medical Embedding Research Prototype"
+type: software
+authors:
+  - name: "RUMPELL"
+repository-code: "https://github.com/RUMPELL/K-BMEM"
+url: "https://github.com/RUMPELL/K-BMEM"
+license: MIT
+version: "1.0.0"
+date-released: 2026-09-10

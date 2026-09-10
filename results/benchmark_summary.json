@@ -1,0 +1,83 @@
+{
+  "datasets": {
+    "aihub_strict_passage": {
+      "description": "Korean question-to-paired-passage matching; auxiliary and not open-corpus RAG.",
+      "metric": "nDCG@10",
+      "n": 339
+    },
+    "exam": {
+      "description": "Korean medical multiple-choice option ranking; semantic discrimination proxy, not generative QA.",
+      "metric": "accuracy@1",
+      "n": 266
+    }
+  },
+  "limitations": [
+    "Both splits had prior evaluation exposure and are not pristine holdouts.",
+    "AIHub strict passage is QA-pair matching, not open-corpus document retrieval.",
+    "This benchmark is not clinical validation.",
+    "Commercial API and local models have different deployment constraints."
+  ],
+  "models": [
+    {
+      "aihub_mrr_at_10": 0.8871997471554994,
+      "aihub_ndcg_at_10": 0.9061196644061282,
+      "aihub_recall_at_20": 0.9823008849557522,
+      "exam_accuracy_at_1": 0.2518796992481203,
+      "exam_mrr": 0.5036340852130327,
+      "model": "K-BMEM",
+      "model_key": "final_kure_mq"
+    },
+    {
+      "aihub_mrr_at_10": 0.793503301025425,
+      "aihub_ndcg_at_10": 0.8246217429048713,
+      "aihub_recall_at_20": 0.967551622418879,
+      "exam_accuracy_at_1": 0.23308270676691728,
+      "exam_mrr": 0.488721804511278,
+      "model": "KURE",
+      "model_key": "original_kure"
+    },
+    {
+      "aihub_mrr_at_10": 0.787546237767477,
+      "aihub_ndcg_at_10": 0.8195069640660948,
+      "aihub_recall_at_20": 0.9528023598820059,
+      "exam_accuracy_at_1": 0.22180451127819548,
+      "exam_mrr": 0.4838345864661654,
+      "model": "BGE-M3",
+      "model_key": "original_baai_bge_m3"
+    },
+    {
+      "aihub_mrr_at_10": 0.8655265252610386,
+      "aihub_ndcg_at_10": 0.8847049124654612,
+      "aihub_recall_at_20": 0.9587020648967551,
+      "exam_accuracy_at_1": 0.2556390977443609,
+      "exam_mrr": 0.49354636591478696,
+      "model": "Qwen3-Embedding-0.6B",
+      "model_key": "qwen3_embedding_0_6b_zero_shot"
+    },
+    {
+      "aihub_mrr_at_10": 0.4730299199325747,
+      "aihub_ndcg_at_10": 0.507909473677136,
+      "aihub_recall_at_20": 0.6843657817109144,
+      "exam_accuracy_at_1": 0.2744360902255639,
+      "exam_mrr": 0.5152255639097744,
+      "model": "OpenAI text-embedding-3-small",
+      "model_key": "openai_text_embedding_3_small"
+    },
+    {
+      "aihub_mrr_at_10": 0.7294657489347753,
+      "aihub_ndcg_at_10": 0.7779645569136969,
+      "aihub_recall_at_20": 0.967551622418879,
+      "exam_accuracy_at_1": 0.2706766917293233,
+      "exam_mrr": 0.5154135338345863,
+      "model": "OpenAI text-embedding-3-large",
+      "model_key": "openai_text_embedding_3_large"
+    }
+  ],
+  "schema_version": 1,
+  "statistical_summary": {
+    "aihub": "K-BMEM was higher than KURE, BGE-M3, and both OpenAI arms after Holm correction; the Qwen3 difference was not significant.",
+    "alpha": 0.05,
+    "exam": "No K-BMEM-vs-reference accuracy comparison was significant after Holm correction."
+  },
+  "status": "aggregate_only_non_pristine_test_evidence"
+}
