@@ -3,14 +3,24 @@
   "dataset_payload_included": false,
   "files": [
     {
+      "relative_path": ".github/workflows/ci.yml",
+      "sha256": "2fc3bb10d5b555fcf1957ac425c622d1a3e0bf9747bf5c61c2f043f365f7270f",
+      "size_bytes": 573
+    },
+    {
       "relative_path": ".gitignore",
-      "sha256": "106270fce78219e995427dac05e60d85873f30b5f659e1ae174276912193653b",
-      "size_bytes": 41
+      "sha256": "b122f67ab16b2164edc9d19b448fe4f6a3991c8cbe257f94be0a898e070a45e6",
+      "size_bytes": 66
     },
     {
       "relative_path": "CITATION.cff",
       "sha256": "8f64e187eabd5f410f3aa20993e9402eab28e43edfac886013418587da1ea8bc",
       "size_bytes": 360
+    },
+    {
+      "relative_path": "CONTRIBUTING.md",
+      "sha256": "b10db336503726dd28368415e6b0758434736448f7680b3aab01bc529288b5bb",
+      "size_bytes": 684
     },
     {
       "relative_path": "DATA_CARD.md",
@@ -33,9 +43,14 @@
       "size_bytes": 575
     },
     {
+      "relative_path": "README.ko.md",
+      "sha256": "2f29d669de18ff11677c3e0564fe100039081ed3c70875e341d3375066d666ce",
+      "size_bytes": 3543
+    },
+    {
       "relative_path": "README.md",
-      "sha256": "c9fa4a294c52ad7361a2c8b258359c8c92b7ba949f4de3c292ee15a7fd1c2e25",
-      "size_bytes": 2675
+      "sha256": "3a36f1694c2920a0bb36744a97c9cfafbfec21e10441b1b9b860da3673787341",
+      "size_bytes": 6195
     },
     {
       "relative_path": "SECURITY.md",
@@ -43,9 +58,14 @@
       "size_bytes": 280
     },
     {
+      "relative_path": "assets/kbmem-banner.svg",
+      "sha256": "bc81444871a926cdcb2f45960b5886a6e979d2de7a54fd8d314e40ba7543a3a4",
+      "size_bytes": 1688
+    },
+    {
       "relative_path": "demo_search.py",
-      "sha256": "eb99bd72252e98bacc4a5d469111802002a2d7dc0b13cb3c15fbe1df632170ff",
-      "size_bytes": 1204
+      "sha256": "9d509715968e2f828004cbf61504f7af2efe30107d3611222f37b5f491c1b8ed",
+      "size_bytes": 175
     },
     {
       "relative_path": "examples/corpus.jsonl",
@@ -56,6 +76,11 @@
       "relative_path": "examples/query.json",
       "sha256": "5771663cdbc23683d54a022ad4d3c281aa19aea316ffbe27485a39df9192a919",
       "size_bytes": 105
+    },
+    {
+      "relative_path": "pyproject.toml",
+      "sha256": "79645315b1479174115e3cc2071f77da391bd01f72f1c55a355693b93acad119",
+      "size_bytes": 762
     },
     {
       "relative_path": "requirements.txt",
@@ -73,14 +98,19 @@
       "size_bytes": 138
     },
     {
+      "relative_path": "src/kbmem/cli.py",
+      "sha256": "a7fa382712801b09e47bb6d647a0fc50540c7ca01c63efb677ef30953aa52a20",
+      "size_bytes": 1447
+    },
+    {
       "relative_path": "src/kbmem/search.py",
       "sha256": "c30816972c2e5386c938673d78f45aab48e2412b6cf5ec44daa95c2fc23f7989",
       "size_bytes": 1066
     },
     {
       "relative_path": "tests/test_search.py",
-      "sha256": "0e9703b91787943e56bc533c0cef98147b4776181b4a0bc0c5abf6e15c2e4566",
-      "size_bytes": 716
+      "sha256": "a88a062d8cf4cf926b60382310bbf0936e2da5ac91a78e2f22b0e92af767c04b",
+      "size_bytes": 1012
     }
   ],
   "license": "MIT",

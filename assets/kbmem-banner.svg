@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">K-BMEM</title>
+  <desc id="desc">Korean-English medical retrieval embeddings</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#071f2c"/><stop offset="0.55" stop-color="#0c4650"/><stop offset="1" stop-color="#147d7e"/></linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#73e2d1" stop-opacity="0"/><stop offset="0.5" stop-color="#73e2d1"/><stop offset="1" stop-color="#73e2d1" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="1200" height="320" rx="28" fill="url(#bg)"/>
+  <g opacity="0.14" fill="none" stroke="#bdf8ec"><circle cx="1030" cy="62" r="150"/><circle cx="1030" cy="62" r="105"/><circle cx="1030" cy="62" r="60"/></g>
+  <path d="M0 230 H170 l22-42 34 82 38-120 38 80 h150 l28-56 32 56 h688" fill="none" stroke="url(#pulse)" stroke-width="4"/>
+  <g transform="translate(72 64)"><rect width="88" height="88" rx="22" fill="#e8fffa"/><path d="M44 18v52M18 44h52" stroke="#0c6269" stroke-width="14" stroke-linecap="round"/></g>
+  <text x="190" y="128" fill="#fff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="72" font-weight="750" letter-spacing="2">K-BMEM</text>
+  <text x="194" y="176" fill="#bdf8ec" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="500" letter-spacing="1">KOREAN–ENGLISH MEDICAL RETRIEVAL</text>
+  <text x="194" y="220" fill="#d9f4ef" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20">Local-first · Evidence-driven · Reproducible</text>
+</svg>

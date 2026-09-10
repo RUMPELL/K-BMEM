@@ -2,6 +2,7 @@ import math
 import unittest
 
 from src.kbmem.search import cosine_ranking, l2_normalize
+from src.kbmem.cli import build_parser
 
 
 class RetrievalTests(unittest.TestCase):
@@ -19,6 +20,11 @@ class RetrievalTests(unittest.TestCase):
     def test_nonfinite_rejected(self):
         with self.assertRaises(ValueError):
             l2_normalize([math.inf, 1])
+
+    def test_cli_requires_model_and_query(self):
+        args = build_parser().parse_args(["--model", "local-model", "--query", "synthetic query"])
+        self.assertEqual(args.model, "local-model")
+        self.assertEqual(args.query, "synthetic query")
 
 
 if __name__ == "__main__":

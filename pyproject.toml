@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kbmem-retrieval"
+version = "1.0.0"
+description = "Model-agnostic dense retrieval helpers from the K-BMEM research prototype"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "RUMPELL"}]
+dependencies = ["sentence-transformers==5.7.0"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+
+[project.scripts]
+kbmem-search = "kbmem.cli:main"
+
+[project.urls]
+Repository = "https://github.com/RUMPELL/K-BMEM"
+
+[tool.setuptools.packages.find]
+where = ["src"]
