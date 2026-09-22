@@ -56,7 +56,7 @@ Tests locate the scripts relative to this directory, so run them from here:
 
 ```bash
 cd research
-python -m pip install -r requirements-test.txt --extra-index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements-test.txt --extra-index-url https://download.pytorch.org/whl/cpu   # numpy, CPU torch, datasets, safetensors
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
