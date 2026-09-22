@@ -1,0 +1,107 @@
+{
+  "description": "BM25 베이스라인. 세 트랙을 같은 코드로 평가한다. 영어 참조 트랙은 한국어 점수가 이상할 때 코드 문제인지 데이터 문제인지 가르는 장치다.",
+  "output_dir": "results/retrieval/bm25_dev",
+  "locked_splits": [
+    "test"
+  ],
+  "_locked_note": "test는 하네스 검증이 끝나기 전까지 잠근다. 지금 열면 하네스 버그가 평가셋에 고착된다.",
+  "cutoffs": {
+    "ndcg": 10,
+    "mrr": 10,
+    "recall": 20
+  },
+  "retriever": {
+    "name": "bm25",
+    "k1": 1.2,
+    "b": 0.75,
+    "tokenizer": "char_bigram",
+    "_tokenizer_note": "한국어는 형태소 경계가 공백과 다르고 분석기는 외부 의존이 된다. 문자 bigram은 분석기 없이 쓰는 표준 대안이며 한·영 혼용에도 그대로 동작한다(라틴은 단어, 한글은 bigram)."
+  },
+  "tasks": [
+    {
+      "name": "ko_passage_strict",
+      "type": "retrieval",
+      "split": "dev",
+      "queries": "data/processed_aihub_qa_v3/passage/queries.jsonl.gz",
+      "qrels": "data/processed_aihub_qa_v3/passage/qrels.tsv",
+      "qrels_split_field": "split",
+      "corpus": [
+        {
+          "path": "data/processed_aihub_qa_v3/passage/corpus_strict.jsonl.gz"
+        }
+      ],
+      "subgroup_fields": [
+        "metadata.domain",
+        "metadata.collection_code"
+      ],
+      "headline_metric": "ndcg"
+    },
+    {
+      "name": "ko_passage_expanded",
+      "type": "retrieval",
+      "split": "dev",
+      "queries": "data/processed_aihub_qa_v3/passage/queries.jsonl.gz",
+      "qrels": "data/processed_aihub_qa_v3/passage/qrels.tsv",
+      "qrels_split_field": "split",
+      "corpus": [
+        {
+          "path": "data/processed_aihub_qa_v3/passage/corpus_strict.jsonl.gz"
+        },
+        {
+          "path": "data/processed_v2/aihub/corpus.jsonl.gz",
+          "unjudged_distractors": true
+        }
+      ],
+      "_corpus_note": "원천 문서 164,368건은 판정되지 않았다. 이들이 상위에 오는 경우를 mean_unjudged_in_top으로 집계해 과소평가 정도를 드러낸다.",
+      "subgroup_fields": [
+        "metadata.domain"
+      ],
+      "headline_metric": "ndcg",
+      "enabled": false,
+      "_disabled_note": "mean_unjudged_in_top이 9.227이라 상위 10건 중 9건이 미판정 문서다. 모델 성능이 아니라 미판정 164,368건을 얼마나 피했는가를 잰 것이라 어느 방향으로도 해석되지 않는다. pooling gold 확보 후 되살린다."
+    },
+    {
+      "name": "en_reference",
+      "type": "pairs_retrieval",
+      "split": "dev",
+      "pairs": "data/processed_medquad_v1/qa/positive_pairs.jsonl.gz",
+      "id_field": "record_id",
+      "question_field": "question",
+      "answer_field": "answer",
+      "corpus_splits": [
+        "train",
+        "dev",
+        "test",
+        "liveqa_holdout"
+      ],
+      "subgroup_fields": [
+        "question_type"
+      ],
+      "_note": "영어 참조 과제. 질문·답변이 한 레코드에 있어 corpus를 로드 시 조립한다(중간 파일 미생성). 한국어 결과가 이상할 때 지표·BM25 구현이 무죄인지 확인한다.",
+      "headline_metric": "ndcg"
+    },
+    {
+      "name": "exam_mcq",
+      "type": "mcq",
+      "split": "dev",
+      "questions": "data/processed_exam_v1/questions.jsonl.gz",
+      "subgroup_fields": [
+        "metadata.source",
+        "metadata.year"
+      ],
+      "headline_metric": "correct"
+    }
+  ],
+  "code_switch_thresholds": [
+    5,
+    10,
+    20
+  ],
+  "_code_switch_note": "레코드의 hangul_chars/latin_chars에서 보고 시점에 등급을 재산출한다. 임계값에 따라 mixed 표본이 크게 달라져(국가고시 test 20자 75건 / 5자 130건) 하나만 보고하면 오해를 부른다.",
+  "bootstrap": {
+    "iterations": 1000,
+    "confidence": 0.95,
+    "seed": 20260810,
+    "_comment": "평가셋이 작아(국가고시 test 266건) 점추정만으로는 6%p 미만 차이를 주장할 수 없다. 백분위 부트스트랩 구간을 병기한다."
+  }
+}

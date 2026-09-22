@@ -1,0 +1,79 @@
+{
+  "description": "제로샷 dense 평가 dev 계약. TASK-05 구현·mock 검증 전용이며 이 config 자체로는 실제 모델을 다운로드하거나 네트워크에 접속하지 않는다.",
+  "output_dir": "results/retrieval/zero_shot_dev",
+  "locked_splits": [
+    "test"
+  ],
+  "_locked_note": "eval_bm25_dev.json과 동일하게 test는 하네스·모델 비교가 끝나기 전까지 잠근다. dev task만 활성화되어 있다.",
+  "cutoffs": {
+    "ndcg": 10,
+    "mrr": 10,
+    "recall": 20
+  },
+  "retriever": {
+    "name": "dense",
+    "provider": "mock",
+    "_provider_note": "기본값은 네트워크 접근이나 모델 다운로드를 유발하지 않는 mock 인코더다. 실제 실행에는 provider를 sentence_transformers로 바꾸고 local_model_path에 승인된 로컬 스냅샷 경로를 지정해야 한다 — model_name_or_path만 있는 상태로는 build_encoder가 거부한다.",
+    "model_name_or_path": "upskyy/bge-m3-korean",
+    "revision": null,
+    "local_model_path": null,
+    "_model_note": "TASK-06까지는 실제 이 모델을 로드하지 않는다. 여기 적힌 값은 재현성 메타데이터 형태를 검증하기 위한 자리표시자다.",
+    "device": "cpu",
+    "dtype": "float32",
+    "query_batch_size": 32,
+    "document_batch_size": 32,
+    "query_max_seq_length": 512,
+    "document_max_seq_length": 512,
+    "_max_seq_length_note": "upskyy/bge-m3-korean은 max_position_embeddings=8194를 보고하지만 sentence_bert_config.json이 max_seq_length=512로 잠가 둔다. 이 config는 그 실제 상한과 같은 512를 요청 값으로 명시해 위험을 숨기지 않는다. 요청 길이가 provider의 실제 상한과 어긋나면 evaluate_retrieval.py의 DenseRetriever가 조용히 자르지 않고 명시적으로 오류를 낸다(tests/test_evaluate_retrieval.py의 DenseLengthMismatchTest).",
+    "query_prefix": "",
+    "document_prefix": "",
+    "pooling": "mean",
+    "normalize_embeddings": true,
+    "similarity": "cosine",
+    "top_k": 20
+  },
+  "code_switch_thresholds": [
+    5,
+    10,
+    20
+  ],
+  "bootstrap": {
+    "iterations": 1000,
+    "confidence": 0.95,
+    "seed": 20260810,
+    "_comment": "eval_bm25_dev.json과 동일한 부트스트랩 계약. 모델 간 비교가 가능하도록 시드·반복·신뢰수준을 고정한다."
+  },
+  "tasks": [
+    {
+      "name": "exam_mcq",
+      "type": "mcq",
+      "split": "dev",
+      "questions": "data/processed_exam_v1/questions.jsonl.gz",
+      "subgroup_fields": [
+        "metadata.source",
+        "metadata.year"
+      ],
+      "headline_metric": "correct",
+      "_note": "주 지표. MASTER_PLAN.md 평가 계약과 동일한 dev n=325 five-option ranking."
+    },
+    {
+      "name": "ko_passage_strict",
+      "type": "retrieval",
+      "split": "dev",
+      "queries": "data/processed_aihub_qa_v3/passage/queries.jsonl.gz",
+      "qrels": "data/processed_aihub_qa_v3/passage/qrels.tsv",
+      "qrels_split_field": "split",
+      "corpus": [
+        {
+          "path": "data/processed_aihub_qa_v3/passage/corpus_strict.jsonl.gz"
+        }
+      ],
+      "subgroup_fields": [
+        "metadata.domain",
+        "metadata.collection_code"
+      ],
+      "headline_metric": "ndcg",
+      "_note": "보조 지표. AIHub strict-passage dev만 사용하며 processed_v2 pseudo-qrel이나 expanded corpus는 참조하지 않는다."
+    }
+  ]
+}

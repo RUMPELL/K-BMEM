@@ -1,0 +1,76 @@
+{
+  "description": "TASK-08A 학습 후 dev 평가 계약. 대조학습된 KURE-v1의 final-step-694 export만 읽고, 국가고시 dev(주 지표)와 AIHub v3 strict-passage dev(보조 진단)를 평가한다. task/cutoff/bootstrap/code-switch 설정은 configs/eval_zero_shot_dev.json과 동일하게 유지해 TASK-06 제로샷 수치와 그대로 비교할 수 있게 한다.",
+  "_gate_reference": "MASTER_PLAN.md Section 4 평가 계약과 사용자 TASK-08A task card Section 13. test split은 잠긴 상태이며 이 config는 dev task만 정의한다.",
+  "_zero_shot_baseline": {
+    "source": "results/retrieval/zero_shot_dev/kure_v1/summary.json (TASK-06B-R3, commit 164aeaf)",
+    "exam_mcq": {"accuracy@1": 0.2308, "MRR": 0.4948},
+    "ko_passage_strict": {"nDCG@10": 0.8178, "MRR@10": 0.7865, "Recall@20": 0.9534},
+    "_note": "제로샷 추론은 재실행하지 않는다. 학습 후 절대 델타는 이 수용된 증거와 비교해 산출한다."
+  },
+  "output_dir": "results/training/contrastive_v1/kure_v1/dev_eval",
+  "locked_splits": ["test"],
+  "_locked_note": "eval_bm25_dev.json·eval_zero_shot_dev.json과 동일하게 test는 잠긴다. TASK-08A는 어떤 test 레코드도 읽지 않는다.",
+  "cutoffs": {
+    "ndcg": 10,
+    "mrr": 10,
+    "recall": 20
+  },
+  "retriever": {
+    "name": "dense",
+    "provider": "sentence_transformers",
+    "model_name_or_path": "nlpai-lab/KURE-v1 (TASK-08A contrastive, final-step-694)",
+    "revision": null,
+    "local_model_path": "~/.local/share/k-bmem/checkpoints/contrastive_v1/kure_v1/final-step-694",
+    "_model_note": "학습이 정확히 694 optimizer step으로 끝난 뒤 scripts/train_contrastive.py가 원자적으로 rename한 가중치 전용 export다. checkpoint-650(마지막 주기 체크포인트)이나 메모리 상태가 아니다. revision은 HF snapshot revision이 아니므로 null이며, 학습 계보는 export 디렉터리의 kbmem_checkpoint_identity.json(base revision d14c8a94…3bd9, batch digest 28809c25…554e708, seed 20260810, global_step 694)이 보유한다.",
+    "device": "cuda",
+    "dtype": "float32",
+    "_dtype_note": "학습은 bf16으로 수행되어 export 가중치도 bfloat16이지만, 평가 산술 경로는 TASK-06 제로샷과 동일한 float32로 맞춘다(bf16→float32 확장 캐스팅). 그래야 학습 전후 차이가 추론 정밀도 차이와 섞이지 않는다. evaluate_retrieval.py는 요청 dtype이 실제로 적용됐는지 파라미터에서 되읽어 확인한다.",
+    "query_batch_size": 32,
+    "document_batch_size": 32,
+    "query_max_seq_length": 512,
+    "document_max_seq_length": 512,
+    "query_prefix": "",
+    "document_prefix": "",
+    "pooling": "cls",
+    "normalize_embeddings": true,
+    "similarity": "cosine",
+    "top_k": 20,
+    "trust_remote_code": false,
+    "code_revision": null,
+    "query_adapter": null,
+    "passage_adapter": null,
+    "_control_note": "KURE는 remote code를 쓰지 않는다. trust_remote_code=True를 요청하면 evaluate_retrieval.py가 모델 구성 전에 거부한다."
+  },
+  "code_switch_thresholds": [5, 10, 20],
+  "bootstrap": {
+    "iterations": 1000,
+    "confidence": 0.95,
+    "seed": 20260810,
+    "_comment": "eval_bm25_dev.json·eval_zero_shot_dev.json과 동일한 결정적 부트스트랩 계약(시드·반복·신뢰수준 고정)."
+  },
+  "tasks": [
+    {
+      "name": "exam_mcq",
+      "type": "mcq",
+      "split": "dev",
+      "questions": "data/processed_exam_v1/questions.jsonl.gz",
+      "subgroup_fields": ["metadata.source", "metadata.year"],
+      "headline_metric": "correct",
+      "_note": "주 지표. dev n=325 five-option ranking. 무작위/최장보기 기준선과 code_switch 5·10·20 층화를 함께 보고한다."
+    },
+    {
+      "name": "ko_passage_strict",
+      "type": "retrieval",
+      "split": "dev",
+      "queries": "data/processed_aihub_qa_v3/passage/queries.jsonl.gz",
+      "qrels": "data/processed_aihub_qa_v3/passage/qrels.tsv",
+      "qrels_split_field": "split",
+      "corpus": [
+        {"path": "data/processed_aihub_qa_v3/passage/corpus_strict.jsonl.gz"}
+      ],
+      "subgroup_fields": ["metadata.domain", "metadata.collection_code"],
+      "headline_metric": "ndcg",
+      "_note": "보조 지표이며 QA쌍 짝 맞추기 진단이다(corpus가 정답 집합 자체). 개방형 corpus RAG 성능으로 주장하지 않는다. expanded corpus와 processed_v2 pseudo-qrel은 참조하지 않는다."
+    }
+  ]
+}

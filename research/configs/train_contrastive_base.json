@@ -1,0 +1,148 @@
+{
+  "description": "TASK-07 contrastive training runner contract. One common config shared by all four TASK-06 model candidates (KURE-v1, BAAI bge-m3, Jina v3, internal-only Upskyy) so TASK-08 selects a model with the same frozen data, objective, seed, precision, and checkpoint policy. scripts/train_contrastive.py never rebuilds or substitutes the batch plan; it only trains from the exact digest-verified TASK-04A output below.",
+  "_gate_reference": "MASTER_PLAN.md TASK-07 card and Decision Log entry for the TASK-04A digest handoff contract.",
+  "batch_plan": {
+    "dir": "data/contrastive_batches_v1",
+    "batches_file": "batches.jsonl.gz",
+    "summary_file": "summary.json",
+    "source_run_id": "run_20260810_141441",
+    "expected_digest": "28809c25fb0898a6a682c9bcfb0f7a9654e4291c9f0c3aed3ebc0fafe554e708",
+    "_digest_note": "Must match both the stored summary.json field and an independent sha256 recompute over the current batches.jsonl.gz bytes before any row is used for training or tokenizer analysis. Mismatch aborts before model construction.",
+    "train_only": true
+  },
+  "objective": {
+    "loss": "multiple_negatives_ranking_loss",
+    "similarity": "cosine",
+    "scale": 20.0,
+    "columns": ["query", "positive", "negative"],
+    "_note": "One in-batch anchor/positive/hard-negative triplet per row, exactly as emitted by TASK-04 build_contrastive_batches.py. No DAPT, no distillation."
+  },
+  "optimizer": {
+    "name": "adamw_torch",
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "lr_scheduler_type": "linear",
+    "max_grad_norm": 1.0
+  },
+  "schedule": {
+    "seed": 20260810,
+    "num_train_epochs": 1,
+    "max_steps": -1,
+    "_note": "TASK-08 may lower num_train_epochs/max_steps per candidate but must keep this seed and objective frozen across all four models."
+  },
+  "runtime": {
+    "precision": "bf16",
+    "gradient_checkpointing": true,
+    "dataloader_num_workers": 2,
+    "dataloader_drop_last": false,
+    "gpu_memory_budget_gb": 24,
+    "_gpu_memory_note": "Design budget, not a hard cap: bf16 weights plus gradient checkpointing must fit within 24 GiB on the frozen RTX 5090 runtime (32,607 MiB total) with headroom for the evaluation harness sharing the same GPU."
+  },
+  "checkpoint": {
+    "root_dir": "~/.local/share/k-bmem/checkpoints/contrastive_v1",
+    "save_steps": 50,
+    "save_total_limit": 3,
+    "disk_estimate": {
+      "optimizer_state_multiplier": 2.0,
+      "fixed_overhead_bytes": 1048576,
+      "staging_overhead_checkpoints": 1,
+      "run_overhead_bytes": 10485760,
+      "safety_margin": 0.2
+    },
+    "_disk_estimate_note": "scripts/train_contrastive.py.estimate_training_disk_bytes() derives the required bytes from the loaded model's actual parameter count and applied dtype, save_total_limit retained checkpoints plus one transient staging checkpoint, a flat run/result overhead, and a 20% safety margin - not a single fixed threshold. See the run manifest's disk_estimate field for the exact breakdown of any given run.",
+    "_resume_note": "Resumable only from the newest checkpoint-<step> directory carrying a kbmem_checkpoint_complete.json completion marker written after every required state file and the identity manifest were fsynced and the directory was atomically renamed out of .staging/; resume is refused (not silently skipped) if that checkpoint's identity manifest disagrees with the current run's config/batch/model/runtime/objective/precision/max-length/seed."
+  },
+  "dev_evaluation_hook": {
+    "evaluator_script": "scripts/evaluate_retrieval.py",
+    "dev_config": "configs/eval_zero_shot_dev.json",
+    "enabled": false,
+    "_note": "TASK-08 points eval_zero_shot_dev.json's retriever.local_model_path at a saved checkpoint directory and runs the existing dev-only evaluator; this hook never touches locked_splits and is not invoked by TASK-07 implementation review."
+  },
+  "tokenizer_length_analysis": {
+    "fields": ["query", "positive", "negative"],
+    "sample_size": null,
+    "_note": "Full digest-verified batch-plan population by default (TASK-07R1 four-model evidence requirement), read-only. A caller may still pass a smaller deterministic sample via a config override, but the frozen default is the whole population. Results are written under runs/<run_id>/ and never back into data/contrastive_batches_v1."
+  },
+  "models": {
+    "kure_v1": {
+      "name": "dense",
+      "provider": "sentence_transformers",
+      "model_name_or_path": "nlpai-lab/KURE-v1",
+      "revision": "d14c8a9423946e268a0c9952fecf3a7aabd73bd9",
+      "local_model_path": "~/.cache/k-bmem/huggingface/hub/models--nlpai-lab--KURE-v1/snapshots/d14c8a9423946e268a0c9952fecf3a7aabd73bd9",
+      "trust_remote_code": false,
+      "code_revision": null,
+      "query_adapter": null,
+      "passage_adapter": null,
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "pooling": "cls",
+      "max_seq_length": 512,
+      "per_device_train_batch_size": 32,
+      "normalize_embeddings": true,
+      "similarity": "cosine",
+      "_license_note": "MIT, as declared in the model-card metadata (docs/task06_phase_b_gate.md Section 1)."
+    },
+    "baai_bge_m3": {
+      "name": "dense",
+      "provider": "sentence_transformers",
+      "model_name_or_path": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "local_model_path": "~/.cache/k-bmem/huggingface/hub/models--BAAI--bge-m3/snapshots/5617a9f61b028005a4858fdac845db406aefb181",
+      "trust_remote_code": false,
+      "code_revision": null,
+      "query_adapter": null,
+      "passage_adapter": null,
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "pooling": "cls",
+      "max_seq_length": 512,
+      "per_device_train_batch_size": 32,
+      "normalize_embeddings": true,
+      "similarity": "cosine",
+      "_license_note": "MIT, as declared by the official model repository (docs/task06_phase_b_gate.md Section 1)."
+    },
+    "jina_embeddings_v3": {
+      "name": "dense",
+      "provider": "sentence_transformers",
+      "model_name_or_path": "jinaai/jina-embeddings-v3",
+      "revision": "ab036b023d30b4d1138c4c3bfa9f0c445ab455d6",
+      "local_model_path": "~/.cache/k-bmem/huggingface/hub/models--jinaai--jina-embeddings-v3/snapshots/ab036b023d30b4d1138c4c3bfa9f0c445ab455d6",
+      "trust_remote_code": true,
+      "code_revision": "845308d0fd72a8406a3e378450e1a09522790419",
+      "query_adapter": "retrieval.query",
+      "passage_adapter": "retrieval.passage",
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "pooling": "mean",
+      "max_seq_length": 512,
+      "per_device_train_batch_size": 32,
+      "normalize_embeddings": true,
+      "similarity": "cosine",
+      "_license_note": "CC BY-NC 4.0. Eligible only for confirmed non-commercial research (docs/task06_phase_b_gate.md Section 1).",
+      "_remote_code_note": "trust_remote_code=True is accepted only for this exact model_name_or_path/revision/code_revision/query_adapter/passage_adapter combination; scripts/evaluate_retrieval.py's _validate_remote_code_controls() (reused unmodified by scripts/train_contrastive.py) fails closed on any drift, and every non-Jina model is refused trust_remote_code=True outright, including KURE, BAAI, and Upskyy."
+    },
+    "upskyy_bge_m3_korean": {
+      "name": "dense",
+      "provider": "sentence_transformers",
+      "model_name_or_path": "upskyy/bge-m3-korean",
+      "revision": "069ae0627320935e4b2879522edbb54650b59bf5",
+      "local_model_path": "~/.cache/k-bmem/huggingface/hub/models--upskyy--bge-m3-korean/snapshots/069ae0627320935e4b2879522edbb54650b59bf5",
+      "trust_remote_code": false,
+      "code_revision": null,
+      "query_adapter": null,
+      "passage_adapter": null,
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "pooling": "mean",
+      "max_seq_length": 512,
+      "per_device_train_batch_size": 32,
+      "normalize_embeddings": true,
+      "similarity": "cosine",
+      "license_label": "LICENSE UNKNOWN — INTERNAL EXPERIMENT ONLY",
+      "_license_note": "LICENSE UNKNOWN — INTERNAL EXPERIMENT ONLY. User-authorized for internal contrastive-training experiments only: no publication, external redistribution, public checkpoint upload, product release, deployment, or removal of this warning is authorized. Every checkpoint and manifest produced for this model key must carry license_label unchanged.",
+      "_max_length_note": "Snapshot architecture max_position_embeddings is 8194 while sentence_bert_config.json declares the native Sentence Transformers maximum as 512. This config requests and applies 512, matching the frozen TASK-06 zero-shot contract; scripts/train_contrastive.py refuses to silently train at a shorter length than requested if the native cap were ever lower than 512."
+    }
+  }
+}

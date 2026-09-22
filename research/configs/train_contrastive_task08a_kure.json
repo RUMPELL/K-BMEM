@@ -1,0 +1,93 @@
+{
+  "description": "TASK-08A 실행 정본. nlpai-lab/KURE-v1 한 모델만 대조학습한다. configs/train_contrastive_base.json의 TASK-07 계약을 그대로 보존하되, 사용자 task card가 고정한 실행 예산(1 epoch = 694 optimizer steps, 22,204 rows, 694 frozen batch groups)을 config 안에 명시해 러너가 실행 전에 검증하도록 한다. TASK-08B/08C/08D는 이 파일이 승인하지 않는다 — models에 kure_v1 외의 키가 없다.",
+  "_gate_reference": "사용자 TASK-08A task card(Section 3 frozen training contract)와 MASTER_PLAN.md TASK-04A digest handoff Decision Log 항목. 여기 적힌 frozen 값은 학습 손실이나 dev 결과를 관찰한 뒤에 변경할 수 없다.",
+  "_authorized_model_keys": ["kure_v1"],
+  "batch_plan": {
+    "dir": "data/contrastive_batches_v1",
+    "batches_file": "batches.jsonl.gz",
+    "summary_file": "summary.json",
+    "source_run_id": "run_20260810_141441",
+    "expected_digest": "28809c25fb0898a6a682c9bcfb0f7a9654e4291c9f0c3aed3ebc0fafe554e708",
+    "expected_rows": 22204,
+    "expected_batch_groups": 694,
+    "_digest_note": "저장된 summary.json digest와 현재 batches.jsonl.gz 바이트에 대한 독립 재계산이 모두 이 값과 같아야 한다. expected_rows/expected_batch_groups는 바이트가 아니라 '읽어들인 결과'를 고정한다 — digest가 같아도 파싱·그룹핑이 달라지면 여기서 멈춘다.",
+    "train_only": true
+  },
+  "objective": {
+    "loss": "multiple_negatives_ranking_loss",
+    "similarity": "cosine",
+    "scale": 20.0,
+    "columns": ["query", "positive", "negative"],
+    "_note": "TASK-07 base config와 동일. TASK-04 배치 계획이 emit한 anchor/positive/hard-negative 삼중항 그대로 사용한다."
+  },
+  "optimizer": {
+    "name": "adamw_torch",
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "lr_scheduler_type": "linear",
+    "max_grad_norm": 1.0
+  },
+  "schedule": {
+    "seed": 20260810,
+    "num_train_epochs": 1,
+    "max_steps": -1,
+    "expected_optimizer_steps": 694,
+    "_note": "694 frozen batch group × 1 epoch = 694 optimizer step. 러너가 첫 스텝 전에 이 값을 실제 스케줄과 대조하고, 학습 종료 후 final export 시점에 global_step이 정확히 694인지 다시 확인한다."
+  },
+  "runtime": {
+    "precision": "bf16",
+    "gradient_checkpointing": true,
+    "dataloader_num_workers": 2,
+    "dataloader_drop_last": false,
+    "gpu_memory_budget_gb": 24,
+    "_gpu_memory_note": "TASK-07 base config와 동일한 설계 예산. 실행 GPU는 RTX 5090 1장(32,607 MiB)이다."
+  },
+  "checkpoint": {
+    "root_dir": "~/.local/share/k-bmem/checkpoints/contrastive_v1",
+    "save_steps": 50,
+    "save_total_limit": 3,
+    "disk_estimate": {
+      "optimizer_state_multiplier": 2.0,
+      "fixed_overhead_bytes": 1048576,
+      "staging_overhead_checkpoints": 1,
+      "run_overhead_bytes": 10485760,
+      "safety_margin": 0.2
+    },
+    "_disk_estimate_note": "root_dir/kure_v1이 이 태스크의 유일한 체크포인트 루트다. 다른 model key의 루트는 읽지도 쓰지도 않는다. 실제 필요 바이트는 로드된 모델의 파라미터 수와 적용 dtype에서 산출되며 run manifest의 disk_estimate에 분해되어 기록된다.",
+    "_final_export_note": "save_steps=50이므로 마지막 주기 체크포인트는 checkpoint-650이고 학습이 실제로 끝난 상태보다 44스텝 뒤처져 있다. scripts/train_contrastive.py는 학습 후 final-step-694 가중치 전용 export를 staging→fsync→identity manifest→완료 마커→원자적 rename 순서로 만들고, dev 평가는 오직 그 export만 읽는다. checkpoint-650을 최종 모델로 대체하지 않는다."
+  },
+  "dev_evaluation_hook": {
+    "evaluator_script": "scripts/evaluate_retrieval.py",
+    "dev_config": "configs/eval_contrastive_task08a_kure.json",
+    "enabled": false,
+    "_note": "dev 평가는 학습 프로세스 안에서 자동 실행하지 않고, 학습이 694스텝으로 끝나고 final export가 검증된 뒤에 별도 명령으로 실행한다. eval config의 local_model_path가 그 export를 가리킨다."
+  },
+  "tokenizer_length_analysis": {
+    "fields": ["query", "positive", "negative"],
+    "sample_size": null,
+    "_note": "TASK-07R1에서 KURE 토크나이저 전수 스캔(22,204행, 512 초과 0건)이 이미 승인되었으므로 TASK-08A는 재실행하지 않는다. 계약 형태만 base config와 동일하게 유지한다."
+  },
+  "models": {
+    "kure_v1": {
+      "name": "dense",
+      "provider": "sentence_transformers",
+      "model_name_or_path": "nlpai-lab/KURE-v1",
+      "revision": "d14c8a9423946e268a0c9952fecf3a7aabd73bd9",
+      "local_model_path": "~/.cache/k-bmem/huggingface/hub/models--nlpai-lab--KURE-v1/snapshots/d14c8a9423946e268a0c9952fecf3a7aabd73bd9",
+      "trust_remote_code": false,
+      "code_revision": null,
+      "query_adapter": null,
+      "passage_adapter": null,
+      "device": "cuda",
+      "dtype": "bfloat16",
+      "pooling": "cls",
+      "max_seq_length": 512,
+      "per_device_train_batch_size": 32,
+      "normalize_embeddings": true,
+      "similarity": "cosine",
+      "_license_note": "MIT, as declared in the model-card metadata (docs/task06_phase_b_gate.md Section 1).",
+      "_offline_note": "local_files_only=True로만 로드한다. 다운로드·revision 변경·다른 base model 사용은 금지되어 있으며, snapshot 디렉터리 이름이 revision과 다르면 모델 구성 전에 거부된다."
+    }
+  }
+}

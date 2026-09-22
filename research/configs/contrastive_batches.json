@@ -1,0 +1,16 @@
+{
+  "description": "Registered train-only MCQ inputs. The emitted plan has one explicit hard negative per example and collision-safe in-batch positives.",
+  "inputs": [
+    {"path": "data/processed_aihub_qa_v3/mcq/triplets.jsonl.gz"},
+    {"path": "data/processed_exam_v1/triplets.jsonl.gz"}
+  ],
+  "enforce_registered_inputs": true,
+  "seed": "kbmem-contrastive-batches-v1",
+  "batch_size": 32,
+  "minimum_batch_size": 2,
+  "max_mean_length_gap": 24,
+  "max_quantile_length_gap": 24,
+  "gzip_compresslevel": 6,
+  "output_dir": "data/contrastive_batches_v1",
+  "runs_dir": "runs/contrastive_batches"
+}

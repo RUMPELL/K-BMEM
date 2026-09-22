@@ -51,7 +51,7 @@ flowchart LR
     G --> H[Top-k evidence]
 ```
 
-The public code exposes the retrieval core as a small model-agnostic Python package. Any compatible SentenceTransformer model ID or local directory can be supplied at runtime.
+The `src/kbmem` package exposes the retrieval core as a small model-agnostic Python package; any compatible SentenceTransformer model ID or local directory can be supplied at runtime. The batch-construction, fine-tuning, and evaluation pipelines that produced the results below are published verbatim under [`research/`](research/README.md) (4 scripts, 308 unit tests), with a claim-to-code map.
 
 ## Results at a glance
 
@@ -110,6 +110,7 @@ This project records negative results as first-class evidence. Domain-adaptive p
 
 ```text
 src/kbmem/                  model-agnostic cosine retrieval
+research/                   batch / training / evaluation pipelines + their tests
 examples/                   synthetic, redistributable sample inputs
 results/                    aggregate-only benchmark evidence
 tests/                      dependency-light unit tests
